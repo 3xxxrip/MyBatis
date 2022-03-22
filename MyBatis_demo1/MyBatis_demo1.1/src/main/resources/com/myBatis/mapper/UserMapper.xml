@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--<!DOCTYPE后面的值必定是文件的根标签-->
+<!--这个文件就是dao接口的配置文件，也就是mapper接口-->
+<mapper namespace="com.myBatis.mapper.UserMapper">
+    <insert id="insertUser">
+            insert into t_user values(null,'longjian','200105',20,'男','2459095104@qq.com')
+    </insert>
+
+<!--    void updateUser();-->
+    <update id="updateUser">
+            UPDATE t_user SET `gender`='女' WHERE `id`=2
+    </update>
+
+<!--    User querytUserById();-->
+
+<!--    查询标签必须设置resultType或resultMap
+            resultType：设置默认的映射关系
+            resultMap：设置自定义的映射关系
+                -->
+    <select id="querytUserById" resultType="com.myBatis.pojo.User">
+        select * from t_user where id=3
+    </select>
+
+<!--    List<User> getAllUser();-->
+    <select id="getAllUser" resultType="user">
+        select * from t_user
+    </select>
+</mapper>

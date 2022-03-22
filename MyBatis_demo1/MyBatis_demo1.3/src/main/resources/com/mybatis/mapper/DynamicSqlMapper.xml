@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace就是对应的mapper全类名-->
+<mapper namespace="com.mybatis.mapper.DynamicSqlMapper">
+    <!--    List<Emp> getEmpByCondition(@Param("emp") Emp emp);-->
+<!--    if标签就是符合条件就显示，不然就没有，这里加一个恒成立条件是为了方式where后面直接跟一个and-->
+    <select id="getEmpByCondition" resultType="emp">
+        select * from t_emp where 1=1
+        <if test="empName !=null and empName !=''">
+            emp_name=#{empName}
+        </if>
+        <if test="age !=null and age !=''">
+            and age=#{age}
+        </if>
+        <if test="gender !=null and gender !=''">
+            and gender=#{gender}
+        </if>
+        <if test="email !=null and email !=''">
+            and email=#{email}
+        </if>
+    </select>
+
+<!--    List<Emp> getEmpByConditionInChoose(Emp emp);-->
+<!--    如果有一个条件满足，就不会执行其他when了-->
+    <select id="getEmpByConditionInChoose" resultType="Emp">
+        select * from t_emp
+        <where>
+            <choose>
+                <when test="empName !=null and empName !=''">
+                    emp_name=#{empName}
+                </when>
+                <when test="age !=null and age !=''">
+                    age=#{age}
+                </when>
+                <when test="gender !=null and gender !=''">
+                    gender=#{gender}
+                </when>
+                <when test="email !=null and email !=''">
+                    email=#{email}
+                </when>
+                <otherwise>
+                    eid=1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+<!--        int deleteMoreByArray(Integer[] eids);-->
+    <delete id="deleteMoreByArray">
+      delete from t_emp where eid in
+
+            <foreach collection="eids" item="eid" open="(" separator="," close=")">
+        #{eid}
+    </foreach>
+    </delete>
+</mapper>

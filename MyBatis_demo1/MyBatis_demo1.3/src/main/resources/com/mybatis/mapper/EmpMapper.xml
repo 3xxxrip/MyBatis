@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace就是对应的mapper全类名-->
+<mapper namespace="com.mybatis.mapper.EmpMapper">
+<!--    List<Emp> getAllEmp();-->
+<!--    <select id="getAllEmp" resultType="emp">-->
+<!--        select * from t_emp-->
+<!--    </select>-->
+    <select id="getAllEmp" resultMap="empResultMap">
+        select * from t_emp
+    </select>
+
+    <!--    这个是解决属性和字段名字不匹配问题的,id设置主键的映射，result设置其他字段的映射,这个map必须设置所有的字段映射关系-->
+    <!--    type是查询表对应的实体类型-->
+    <resultMap id="empResultMap" type="emp">
+        <id property="eid" column="eid"/>
+        <result property="empName" column="emp_name"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <!--        <association property="did" column="did"/>-->
+    </resultMap>
+
+<!--    Emp getEmpAdnDept(Integer id);-->
+    <select id="getEmpAdnDept" resultMap="getEmpAdnDeptMapTwo">
+        SELECT * FROM t_emp e
+                          LEFT JOIN t_dept d
+                                    ON d.`did`=e.`did`
+        WHERE e.`eid`=${id}
+    </select>
+
+    <!--    通过级联赋值，处理多对一的映射关系-->
+    <resultMap id="getEmpAdnDeptMap" type="emp">
+        <id property="eid" column="eid"/>
+        <result property="empName" column="emp_name"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <result property="dept.did" column="did"/>
+        <result property="dept.deptName" column="dept_name"/>
+    </resultMap>
+<!--    这个方式就相当于先把dept赋值之后再赋值给emp的dept-->
+    <resultMap id="getEmpAdnDeptMapTwo" type="emp">
+        <id property="eid" column="eid"/>
+        <result property="empName" column="emp_name"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <association property="dept" javaType="dept">
+            <id property="did" column="did"/>
+            <result property="deptName" column="dept_name"/>
+        </association>
+    </resultMap>
+
+<!--    Emp getEmpAndDeptByStepOne(@Param("id") Integer id);-->
+    <select id="getEmpAndDeptByStepOne" resultType="Emp">
+        select * from t_emp where id=${id}
+    </select>
+
+    <resultMap id="getEmpAndDeptByStepOne" type="emp">
+        <id property="eid" column="eid"/>
+        <result property="empName" column="emp_name"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <association property="dept" javaType="dept">
+            <id property="did" column="did"/>
+            <result property="deptName" column="dept_name"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getEmpAndDeptByStepTwo" resultMap="getEmpAndDeptByStepTwoMap">
+        select * from t_emp where eid=${id}
+    </select>
+
+    <resultMap id="getEmpAndDeptByStepTwoMap" type="emp">
+        <id property="eid" column="eid"/>
+        <result property="empName" column="emp_name"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <association property="dept" select="com.mybatis.mapper.EmpMapper.getEmpAndDeptByStepTwox" column="did">
+        </association>
+    </resultMap>
+
+    <select id="getEmpAndDeptByStepTwox" resultType="com.mybatis.pojo.Dept">
+        select * from t_dept where did=${id}
+    </select>
+</mapper>
